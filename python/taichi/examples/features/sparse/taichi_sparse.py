@@ -1,3 +1,5 @@
+from taichi.examples.patterns import taichi_logo
+
 import taichi as ti
 
 ti.init(arch=ti.cuda)
@@ -17,9 +19,9 @@ block3.dense(ti.ij, 4).place(x)
 def activate(t: ti.f32):
     for i, j in ti.ndrange(n, n):
         p = ti.Vector([i, j]) / n
-        p = ti.Matrix.rotation2d(ti.sin(t)) @ (p - 0.5) + 0.5
+        p = ti.math.rotation2d(ti.sin(t)) @ (p - 0.5) + 0.5
 
-        if ti.taichi_logo(p) == 0:
+        if taichi_logo(p) == 0:
             x[i, j] = 1
 
 
@@ -41,13 +43,18 @@ def paint():
         img[scatter(i), scatter(j)] = 1 - t / 4
 
 
-img.fill(0.05)
+def main():
+    img.fill(0.05)
 
-gui = ti.GUI('Sparse Grids', (res, res))
+    gui = ti.GUI("Sparse Grids", (res, res))
 
-for i in range(100000):
-    block1.deactivate_all()
-    activate(i * 0.05)
-    paint()
-    gui.set_image(img)
-    gui.show()
+    for i in range(100000):
+        block1.deactivate_all()
+        activate(i * 0.05)
+        paint()
+        gui.set_image(img)
+        gui.show()
+
+
+if __name__ == "__main__":
+    main()
